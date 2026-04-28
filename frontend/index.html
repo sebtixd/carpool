@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexRide - Carpooling of the Future</title>
+    <!-- Add SEO Best Practices -->
+    <meta name="description" content="NexRide represents the future of carpooling for passengers and drivers. Ultra-premium experience with real-time updates and seamless booking.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style> body { display: none; } </style>
+    <script>
+        function goToDashboard() {
+            const role = localStorage.getItem('userRole');
+            if (role === 'CHAUFFEUR') {
+                window.location.href = 'dashboard-chauffeur.html';
+            } else {
+                window.location.href = 'dashboard-passager.html';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!localStorage.getItem('userId') || localStorage.getItem('userId') === 'null') {
+                window.location.href = 'auth.html';
+            } else {
+                document.body.style.display = 'block';
+            }
+        });
+    </script>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo">NexRide.</a>
+        <ul>
+            <li><a href="index.html">Accueil</a></li>
+            <li><a href="#trips">Trajets</a></li>
+            <li><a href="#" class="btn btn-outline" onclick="goToDashboard()">Mon Dashboard</a></li>
+            <li><a href="#" class="btn" onclick="app.logout()">Déconnexion</a></li>
+        </ul>
+    </nav>
+
+    <div class="hero">
+        <h1>Voyagez plus loin, ensemble.</h1>
+        <p>Découvrez la nouvelle génération du covoiturage. Confort, sécurité et élégance redéfinis pour vous connecter à votre prochaine destination.</p>
+        
+        <form class="search-box" id="search-form">
+            <input type="text" id="search-depart" placeholder="Lieu de départ" required>
+            <input type="text" id="search-arrivee" placeholder="Lieu d'arrivée" required>
+            <input type="date" id="search-date" required>
+            <button type="submit" class="btn btn-accent"><i class="fas fa-search"></i> &nbsp;Rechercher</button>
+        </form>
+    </div>
+
+    <h2 class="section-title" id="trips">Trajets Disponibles</h2>
+    <div class="trip-grid" id="trip-results">
+        <!-- Javascript will inject items here dynamically -->
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Chauffeur - NexRide</title>
+    <meta name="description" content="Manage your proposed trips and view notifications.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="logo">NexRide.</a>
+        <ul>
+            <li><a href="index.html">Rechercher</a></li>
+            <li><a href="#" class="btn btn-outline" onclick="app.logout()">Déconnexion</a></li>
+        </ul>
+    </nav>
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <a href="#" class="active" onclick="app.switchTab('trips')"><i class="fas fa-route"></i> Mes Trajets Proposés</a>
+            <a href="#" onclick="app.switchTab('add')"><i class="fas fa-plus"></i> Proposer un Trajet</a>
+            <a href="#" onclick="app.switchTab('notifications')"><i class="fas fa-bell"></i> Notifications <span class="badge full" id="notif-badge" style="display:none;">0</span></a>
+            <a href="#" onclick="app.switchTab('settings')"><i class="fas fa-cog"></i> Paramètres</a>
+        </aside>
+        
+        <main class="dashboard-content" id="dashboard-main">
+            <h2 style="margin-bottom:20px;">Vue d'ensemble Conducteur</h2>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <h4>Trajets proposés</h4>
+                    <div class="value" id="stat-trajets">-</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Avis</h4>
+                    <div class="value" id="stat-avis"><i class="fas fa-star" style="color:#fbbf24"></i> -</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Prochain départ</h4>
+                    <div class="value" style="font-size:1.5rem" id="stat-prochain">-</div>
+                </div>
+            </div>
+
+            <h2>Vos Trajets Proposés</h2>
+            <div class="trip-grid" style="padding: 20px 0;" id="recent-trips-grid">
+                <!-- Javascript will inject items here -->
+            </div>
+        </main>
+
+        <main class="dashboard-content" id="add-main" style="display:none;">
+            <h2>Proposer un nouveau Trajet</h2>
+            <form id="add-trajet-form" style="max-width: 500px; margin-top:20px;">
+                <div class="form-group">
+                    <label>Point de Départ</label>
+                    <input type="text" id="traj-depart" class="form-control" required placeholder="Ex: Paris">
+                </div>
+                <div class="form-group">
+                    <label>Point d'Arrivée</label>
+                    <input type="text" id="traj-arrivee" class="form-control" required placeholder="Ex: Lyon">
+                </div>
+                <div class="form-group" style="margin-top:15px;">
+                    <label>Date et Heure</label>
+                    <input type="datetime-local" id="traj-date" class="form-control" required>
+                </div>
+                <div class="form-group" style="margin-top:15px;">
+                    <label>Nombre de Places</label>
+                    <input type="number" id="traj-places" class="form-control" min="1" max="8" required>
+                </div>
+                <div class="form-group" style="margin-top:15px;">
+                    <label>Prix par Place (€)</label>
+                    <input type="number" step="0.5" id="traj-prix" class="form-control" min="1" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:15px;">Proposer le Trajet</button>
+            </form>
+        </main>
+
+        <main class="dashboard-content" id="notifications-main" style="display:none;">
+            <h2>Vos Notifications</h2>
+            <div class="notifications" style="margin-top:20px;" id="notifications-list">
+                <!-- Javascript will inject items here -->
+            </div>
+        </main>
+    </div>
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', loadDashboard);
+    </script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentification - NexRide</title>
+    <meta name="description" content="Login or register for an account on NexRide.">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="logo">NexRide.</a>
+    </nav>
+    <div class="auth-container" id="login-section">
+        <h2>Bon Retour</h2>
+        <form id="login-form">
+            <div class="form-group">
+                <label for="login-email">Adresse Email</label>
+                <input type="email" id="login-email" required>
+            </div>
+            <div class="form-group">
+                <label for="login-pass">Mot de passe</label>
+                <input type="password" id="login-pass" required>
+            </div>
+            <button type="submit" class="btn btn-accent" style="width:100%; margin-top:10px;">Se connecter</button>
+        </form>
+        <div class="auth-switch">
+            Pas encore de compte ? <a onclick="app.toggleAuth()">S'inscrire</a>
+        </div>
+    </div>
+
+    <div class="auth-container" id="register-section" style="display:none;">
+        <h2>Créer un compte</h2>
+        <form id="register-form">
+            <div class="form-group">
+                <label for="reg-nom">Nom</label>
+                <input type="text" id="reg-nom" required>
+            </div>
+            <div class="form-group">
+                <label for="reg-prenom">Prénom</label>
+                <input type="text" id="reg-prenom" required>
+            </div>
+            <div class="form-group">
+                <label for="reg-email">Adresse Email</label>
+                <input type="email" id="reg-email" required>
+            </div>
+            <div class="form-group">
+                <label for="reg-pass">Mot de passe</label>
+                <input type="password" id="reg-pass" required>
+            </div>
+            <div class="form-group">
+                <label for="reg-role">Je suis un...</label>
+                <select id="reg-role">
+                    <option value="PASSAGER">Passager (Rechercher)</option>
+                    <option value="CHAUFFEUR">Chauffeur (Proposer)</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-accent" style="width:100%; margin-top:10px;">S'inscrire</button>
+        </form>
+        <div class="auth-switch">
+            Déjà un compte ? <a onclick="app.toggleAuth()">Se connecter</a>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
