@@ -119,10 +119,42 @@ const app = {
         });
     },
 
+    cancelTrajet(id) {
+        if (!confirm("Confirmer l'annulation de ce trajet ?")) return;
+        const params = new URLSearchParams({ trajetId: id });
+        fetch('/api/trajets/cancel', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params.toString()
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                loadDashboard();
+            } else {
+                alert("Erreur: " + data.message);
+            }
+        })
+        .catch(() => alert("Erreur de connexion au serveur."));
+    },
+
     cancelReservation(id) {
-        if(confirm("Confirmer l'annulation ? Politique de remboursement : intégral si > 24h, sinon partiel. Poursuivre ?")) {
-            alert("Réservation annulée. Remboursement traité ou Pénalité appliquée selon les règles métier Java.");
-        }
+        if (!confirm("Confirmer l'annulation de cette réservation ?")) return;
+        const params = new URLSearchParams({ reservationId: id });
+        fetch('/api/reservations/cancel', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params.toString()
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                loadDashboard();
+            } else {
+                alert("Erreur: " + data.message);
+            }
+        })
+        .catch(() => alert("Erreur de connexion au serveur."));
     },
 
     switchTab(tab) {
@@ -248,8 +280,11 @@ function loadDashboard() {
 
         // Recent Trips
         const grid = document.getElementById('recent-trips-grid');
+        const role = localStorage.getItem('userRole');
         grid.innerHTML = '';
         data.recentTrips.forEach(tr => {
+            const isCancelled = tr.status === 'ANNULE' || tr.status === 'ANNULEE';
+            const cancelFn = role === 'CHAUFFEUR' ? `app.cancelTrajet('${tr.id}')` : `app.cancelReservation('${tr.id}')`;
             grid.innerHTML += `
             <div class="trip-card">
                 <div class="route">${tr.depart} <i class="fas fa-arrow-right"></i> ${tr.arrivee}</div>
@@ -257,8 +292,8 @@ function loadDashboard() {
                     <span><i class="far fa-calendar"></i> ${tr.date.split('T')[0]}</span>
                 </div>
                 <div style="margin-top:15px; display:flex; justify-content:space-between; align-items:center;">
-                    <span class="badge ${tr.status === 'ANNULEE' ? 'danger' : ''}">${tr.status}</span>
-                    ${tr.status !== 'ANNULEE' ? `<button class="btn btn-outline" style="padding:8px 15px; border-color:var(--danger); color:var(--danger)" onclick="app.cancelReservation('${tr.id}')">Annuler</button>` : ''}
+                    <span class="badge ${isCancelled ? 'danger' : ''}">${tr.status}</span>
+                    ${!isCancelled ? `<button class="btn btn-outline" style="padding:8px 15px; border-color:var(--danger); color:var(--danger)" onclick="${cancelFn}">Annuler</button>` : ''}
                 </div>
             </div>`;
         });

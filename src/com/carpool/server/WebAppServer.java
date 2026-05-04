@@ -32,7 +32,9 @@ public class WebAppServer {
         
         server.createContext("/", new StaticFileHandler());
         server.createContext("/api/trajets", new ApiTrajetsHandler());
+        server.createContext("/api/trajets/cancel", new ApiCancelTrajetHandler());
         server.createContext("/api/reservations", new ApiReservationsHandler());
+        server.createContext("/api/reservations/cancel", new ApiCancelReservationHandler());
         server.createContext("/api/auth/login", new ApiLoginHandler());
         server.createContext("/api/auth/register", new ApiRegisterHandler());
         server.createContext("/api/dashboard", new ApiDashboardHandler());
@@ -106,7 +108,9 @@ public class WebAppServer {
                     return;
                 }
                 t.getResponseHeaders().add("Content-Type", "application/json");
-                String jsonArray = "[" + trajetService.getAllTrajets().stream().map(tr -> {
+                String jsonArray = "[" + trajetService.getAllTrajets().stream()
+                    .filter(tr -> tr.getStatus() != com.carpool.model.enums.TrajetStatus.ANNULE && tr.getPlacesDisponibles() > 0)
+                    .map(tr -> {
                     User chauffeur = authService.getUserById(tr.getChauffeurId());
                     String nomChauffeur = chauffeur != null ? chauffeur.getPrenom() + " " + chauffeur.getNom().substring(0, 1) + "." : "Inconnu";
                     return String.format("{\"id\":\"%s\", \"depart\":\"%s\", \"arrivee\":\"%s\", \"date\":\"%s\", \"prix\":%.2f, \"places\":%d, \"chauffeurNom\":\"%s\"}", 
@@ -124,6 +128,53 @@ public class WebAppServer {
                     trajetService.addTrajet(tr);
                     sendResp(t, 200, "{\"status\":\"success\"}");
                 } catch(Exception e) {
+                    sendResp(t, 400, "{\"status\":\"error\", \"message\":\"" + e.getMessage().replace("\"", "'") + "\"}");
+                }
+            } else {
+                sendResp(t, 405, "{\"status\":\"error\"}");
+            }
+        }
+    }
+
+    static class ApiCancelTrajetHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange t) throws IOException {
+            if ("POST".equals(t.getRequestMethod())) {
+                try {
+                    String body = new String(t.getRequestBody().readAllBytes());
+                    Map<String, String> p = parseForm(body);
+                    String trajetId = p.get("trajetId");
+                    if (trajetId == null) throw new Exception("trajetId manquant");
+                    if (trajetService.getTrajet(trajetId) == null) throw new Exception("Trajet introuvable");
+
+                    reservationService.annulerParChauffeur(trajetId);
+
+                    t.getResponseHeaders().add("Content-Type", "application/json");
+                    sendResp(t, 200, "{\"status\":\"success\"}");
+                } catch (Exception e) {
+                    sendResp(t, 400, "{\"status\":\"error\", \"message\":\"" + e.getMessage().replace("\"", "'") + "\"}");
+                }
+            } else {
+                sendResp(t, 405, "{\"status\":\"error\"}");
+            }
+        }
+    }
+
+    static class ApiCancelReservationHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange t) throws IOException {
+            if ("POST".equals(t.getRequestMethod())) {
+                try {
+                    String body = new String(t.getRequestBody().readAllBytes());
+                    Map<String, String> p = parseForm(body);
+                    String reservationId = p.get("reservationId");
+                    if (reservationId == null) throw new Exception("reservationId manquant");
+
+                    reservationService.annulerParPassager(reservationId);
+
+                    t.getResponseHeaders().add("Content-Type", "application/json");
+                    sendResp(t, 200, "{\"status\":\"success\"}");
+                } catch (Exception e) {
                     sendResp(t, 400, "{\"status\":\"error\", \"message\":\"" + e.getMessage().replace("\"", "'") + "\"}");
                 }
             } else {
